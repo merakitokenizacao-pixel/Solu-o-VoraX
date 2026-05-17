@@ -101,24 +101,24 @@ function InboxCard({
     <div
       onClick={onClick}
       className={cn(
-        "grid grid-cols-[40px_1fr] gap-3 px-3.5 py-3 rounded-xl cursor-pointer transition-all mb-0.5 relative border-l-2",
+        "grid grid-cols-[36px_1fr] gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors mb-0.5 relative border-l-2",
         isActive ? "bg-brand-light border-l-brand" : "border-l-transparent hover:bg-surface-2"
       )}
     >
-      <Avatar name={lead.nome} url={lead.foto_url} size={40} />
+      <Avatar name={lead.nome} url={lead.foto_url} size={36} />
       <div className="min-w-0 flex flex-col gap-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[13px] font-semibold text-text truncate">{lead.nome || lead.telefone}</span>
+          <span className="text-sm font-semibold text-text truncate">{lead.nome || lead.telefone}</span>
           <span className="text-[10px] text-muted-brand font-mono shrink-0">{relativeTime(lastDate)}</span>
         </div>
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="flex items-center gap-1.5">
           <ScoreBadge score={lead.score} status={lead.status_atividade} />
-          <span className={cn("text-[8.5px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-[0.08em]",
+          <span className={cn("text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider",
             lead.status === "agendado" ? "bg-success-bg text-success" : "bg-surface-2 text-muted-brand")}>
             {lead.status}
           </span>
         </div>
-        <div className="text-[11.5px] text-muted-brand truncate">{preview}</div>
+        <div className="text-xs text-muted-brand truncate">{preview}</div>
       </div>
     </div>
   );
@@ -132,22 +132,20 @@ function MsgBubble({ msg }: { msg: Conversa | { id: string; origem: string; mens
   const time = new Date(msg.enviado_em).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className={cn("flex gap-2 items-end mb-1.5", right ? "flex-row-reverse self-end max-w-[72%]" : "self-start max-w-[72%]")}>
+    <div className={cn("flex gap-2 items-end mb-2", right ? "flex-row-reverse self-end max-w-[70%]" : "self-start max-w-[70%]")}>
       <div className="flex flex-col">
-        {isAgente && <div className="text-[9px] text-brand font-bold tracking-[0.1em] mb-0.5 text-right">🤖 A VoraX</div>}
-        {isHumano && <div className="text-[9px] font-bold tracking-[0.1em] mb-0.5 text-right" style={{ color: "var(--vorax-purple)" }}>👤 Você</div>}
+        {isAgente && <div className="text-[9px] text-brand font-semibold tracking-wider mb-1 text-right uppercase">A VoraX</div>}
+        {isHumano && <div className="text-[9px] text-muted-brand font-semibold tracking-wider mb-1 text-right uppercase">Você</div>}
         <div className={cn(
-          "px-3.5 py-2.5 text-[13.5px] leading-[1.55] word-break-all",
-          isAgente && "bg-brand text-white rounded-[4px_16px_16px_16px]",
-          isHumano && "rounded-[4px_16px_16px_16px] border",
-          !right && "bg-surface border border-border-subtle rounded-[4px_16px_16px_16px]",
+          "px-4 py-2.5 text-sm leading-relaxed break-words",
+          isAgente && "bg-accent-light text-text rounded-2xl rounded-tr-sm",
+          isHumano && "bg-brand-light text-brand rounded-2xl rounded-tr-sm border border-brand/20",
+          !right && "bg-surface-2 text-text rounded-2xl rounded-tl-sm",
           ("optimistic" in msg && msg.optimistic) && "opacity-60"
-        )}
-          style={isHumano ? { background: "var(--vorax-purple-bg)", color: "var(--vorax-purple)", borderColor: "var(--vorax-purple)" } : undefined}
-        >
+        )}>
           {msg.mensagem}
         </div>
-        <div className={cn("text-[10px] text-muted-brand mt-1 font-mono px-0.5", right ? "text-right" : "text-left")}>{time}</div>
+        <div className={cn("text-[10px] text-muted-brand mt-1 font-mono", right ? "text-right" : "text-left")}>{time}</div>
       </div>
     </div>
   );
@@ -248,7 +246,7 @@ function ChatCol({
   return (
     <div className="flex flex-col h-full min-h-0 bg-bg border-r border-border-subtle">
       {/* Header */}
-      <div className="flex items-center gap-3.5 px-6 py-3.5 bg-surface border-b border-border-subtle min-h-[72px] shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 bg-surface border-b border-border-subtle min-h-[64px] shrink-0">
         <button onClick={onBack} className="lg:hidden text-muted-brand hover:text-text">
           <ChevronLeft size={20} />
         </button>
@@ -286,17 +284,18 @@ function ChatCol({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col min-h-0 gap-0.5">
+      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col min-h-0">
         {grouped.length === 0 ? (
-          <div className="m-auto text-center text-muted-brand text-sm">
-            <div className="text-4xl mb-3">💬</div>
-            Nenhuma mensagem ainda
+          <div className="m-auto text-center text-muted-brand">
+            <p className="text-sm">Nenhuma mensagem ainda</p>
           </div>
         ) : (
           grouped.map(({ day, msgs: dayMsgs }) => (
             <div key={day}>
-              <div className="flex justify-center my-3">
-                <span className="text-[10px] text-muted-brand font-mono bg-surface-2 px-3.5 py-1 rounded-full tracking-[0.05em]">{day}</span>
+              <div className="flex items-center gap-3 my-4">
+                <div className="flex-1 h-px bg-border-subtle" />
+                <span className="text-[10px] text-muted-brand font-semibold tracking-wider uppercase">{day}</span>
+                <div className="flex-1 h-px bg-border-subtle" />
               </div>
               {dayMsgs.map((m) => <MsgBubble key={m.id} msg={m} />)}
             </div>
@@ -306,31 +305,31 @@ function ChatCol({
       </div>
 
       {/* Composer */}
-      <div className="shrink-0 bg-surface border-t border-border-subtle">
-        <div className="flex items-center gap-2.5 px-6 py-3.5">
+      <div className="shrink-0 bg-surface border-t border-border-subtle px-4 py-3">
+        <div className="flex items-center gap-2">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
             placeholder="Digite uma mensagem…"
-            className="flex-1 bg-surface-2 border border-border-subtle rounded-xl px-4 py-2.5 text-[13.5px] text-text placeholder:text-muted-brand focus:outline-none focus:border-brand transition-colors"
+            className="flex-1 bg-surface-2 border border-border-subtle rounded-xl px-4 py-2.5 text-sm text-text placeholder:text-muted-brand focus:outline-none focus:border-brand transition-colors"
           />
           <button
             onClick={sendMessage}
             disabled={sending || !input.trim()}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand text-white hover:opacity-85 transition-all disabled:opacity-40 shrink-0"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand text-white hover:bg-accent2 transition-colors disabled:opacity-40 shrink-0"
           >
             <Send size={14} />
           </button>
         </div>
-        <div className="px-6 pb-2.5 text-[11px] text-muted-brand flex items-center gap-1.5 justify-center">
+        <div className="mt-2 text-[10px] text-muted-brand flex items-center gap-1 justify-center">
           {localLead.ia_pausada ? (
-            <>👤 <span>Você está atendendo este cliente.</span>
-              <button onClick={toggleIA} className="text-brand font-semibold hover:underline">Retomar a VoraX.</button>
+            <><span>Você está atendendo.</span>
+              <button onClick={toggleIA} className="text-brand font-semibold hover:underline ml-1">Retomar a VoraX.</button>
             </>
           ) : (
-            <>🔒 <span>A VoraX está gerenciando automaticamente.</span>
-              <button onClick={toggleIA} className="text-brand font-semibold hover:underline">Pausar e assumir.</button>
+            <><span>A VoraX está gerenciando automaticamente.</span>
+              <button onClick={toggleIA} className="text-brand font-semibold hover:underline ml-1">Pausar e assumir.</button>
             </>
           )}
         </div>
@@ -569,14 +568,12 @@ export function ConversasPage({
     <div className="flex h-[calc(100vh-64px)] overflow-hidden">
       {/* Inbox */}
       <div className={cn(
-        "w-[340px] shrink-0 flex flex-col bg-surface border-r border-border-subtle",
+        "w-80 shrink-0 flex flex-col bg-surface border-r border-border-subtle",
         selectedId && "hidden lg:flex"
       )}>
         {/* Inbox header */}
-        <div className="px-5 pt-5 pb-3 border-b border-border-subtle shrink-0">
-          <div className="flex items-center justify-between mb-3.5">
-            <h2 className="font-display text-[24px] font-medium">Conversas</h2>
-          </div>
+        <div className="px-4 pt-4 pb-3 border-b border-border-subtle shrink-0">
+          <h2 className="font-display text-xl font-medium text-text mb-3">Conversas</h2>
           {/* Tabs */}
           <div className="grid grid-cols-4 gap-1.5">
             {INBOX_TABS.map(({ key, label }) => (
@@ -584,32 +581,32 @@ export function ConversasPage({
                 key={key}
                 onClick={() => setTab(key)}
                 className={cn(
-                  "rounded-lg py-2 text-center cursor-pointer transition-all border",
+                  "rounded-lg py-1.5 text-center cursor-pointer transition-colors border",
                   tab === key
                     ? "bg-brand-light border-brand"
-                    : "bg-surface-2 border-border-subtle hover:border-border-strong"
+                    : "bg-surface-2 border-transparent hover:border-border-subtle"
                 )}
               >
-                <span className={cn("text-[9px] font-bold tracking-[0.08em] block mb-0.5", tab === key ? "text-brand" : "text-muted-brand")}>{label}</span>
-                <span className={cn("font-mono text-[12px] font-semibold", tab === key ? "text-brand" : "text-text")}>{tabCounts[key]}</span>
+                <span className={cn("text-[9px] font-semibold tracking-wider uppercase block mb-0.5", tab === key ? "text-brand" : "text-muted-brand")}>{label}</span>
+                <span className={cn("font-mono text-xs font-bold", tab === key ? "text-brand" : "text-text")}>{tabCounts[key]}</span>
               </button>
             ))}
           </div>
           {/* Segmento chips */}
-          <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-border-subtle">
-            <button onClick={() => setSegFilter(null)} className={cn("text-[10px] font-semibold px-2.5 py-1 rounded-xl border transition-all", !segFilter ? "bg-brand-light text-brand border-brand" : "bg-surface-2 text-muted-brand border-transparent hover:bg-surface-3")}>
+          <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2.5 border-t border-border-subtle">
+            <button onClick={() => setSegFilter(null)} className={cn("text-[9px] font-semibold px-2.5 py-1 rounded-full border transition-colors", !segFilter ? "bg-brand-light text-brand border-brand/30" : "bg-surface-2 text-muted-brand border-transparent hover:bg-surface-3")}>
               Todos
             </button>
             {SEGMENTS.map((s) => (
               <button key={s} onClick={() => setSegFilter(s === segFilter ? null : s)}
-                className={cn("text-[10px] font-semibold px-2.5 py-1 rounded-xl border transition-all capitalize", segFilter === s ? "bg-brand-light text-brand border-brand" : "bg-surface-2 text-muted-brand border-transparent hover:bg-surface-3")}>
+                className={cn("text-[9px] font-semibold px-2.5 py-1 rounded-full border transition-colors capitalize", segFilter === s ? "bg-brand-light text-brand border-brand/30" : "bg-surface-2 text-muted-brand border-transparent hover:bg-surface-3")}>
                 {s.replace("_", " ")}
               </button>
             ))}
           </div>
         </div>
         {/* Lead list */}
-        <div className="flex-1 overflow-y-auto p-1.5">
+        <div className="flex-1 overflow-y-auto p-2">
           {filteredLeads.length === 0 ? (
             <div className="py-12 text-center text-muted-brand text-sm">Nenhum cliente</div>
           ) : (
