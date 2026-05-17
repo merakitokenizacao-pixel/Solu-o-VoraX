@@ -210,18 +210,18 @@ function MetricCard({
   subVariant?: "muted" | "up" | "down";
 }) {
   return (
-    <div className="bg-surface border border-border-subtle rounded-[18px] p-7 relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-border-strong group">
+    <div className="bg-surface border border-border-subtle rounded-2xl p-6 relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-border-strong group">
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 group-hover:opacity-60 transition-opacity" />
-      <div className="text-[9px] text-muted-brand font-medium uppercase tracking-[0.18em] mb-3.5">
+      <div className="text-[10px] text-muted-brand font-semibold uppercase tracking-wider mb-4">
         {label}
       </div>
-      <div className="font-mono text-[44px] font-light leading-none mb-2.5 text-text">
+      <div className="font-mono text-4xl font-light leading-none mb-3 text-text tabular-nums">
         {value}
       </div>
-      <div className="w-6 h-px bg-gold opacity-50 mb-2.5" />
+      <div className="w-5 h-px bg-gold opacity-40 mb-3" />
       <div
         className={cn(
-          "text-[11px] tracking-[0.03em]",
+          "text-xs",
           subVariant === "up" && "text-success",
           subVariant === "down" && "text-danger",
           subVariant === "muted" && "text-muted-brand"
@@ -419,27 +419,25 @@ function TimelineChart({ leads }: { leads: Lead[] }) {
 // — Recent Leads —
 function RecentLeads({ leads }: { leads: Lead[] }) {
   return (
-    <div className="bg-surface border border-border-subtle rounded-[18px] p-7 mt-5">
-      <div className="flex items-center justify-between mb-5 pb-4 border-b border-border-subtle">
-        <h2 className="font-display text-[17px] font-normal text-text tracking-[0.02em]">
-          Clientes recentes
-        </h2>
-        <Link href="/clientes" className="text-[11px] text-muted-brand hover:text-brand font-medium tracking-[0.05em] transition-colors">
+    <div className="bg-surface border border-border-subtle rounded-2xl p-6 mt-6">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-subtle">
+        <h2 className="font-display text-xl font-medium text-text">Clientes recentes</h2>
+        <Link href="/clientes" className="text-xs text-muted-brand hover:text-brand font-medium transition-colors">
           Ver todos →
         </Link>
       </div>
-      <div className="flex flex-col gap-0.5">
+      <div className="divide-y divide-border-subtle">
         {leads.map((l) => (
           <div
             key={l.id}
-            className="flex items-center gap-3.5 px-3.5 py-3 rounded-xl border border-transparent hover:bg-surface-2 hover:border-border-subtle cursor-pointer transition-all"
+            className="flex items-center gap-3 py-3 px-2 rounded-xl hover:bg-surface-2 cursor-pointer transition-colors"
           >
-            <Avatar name={l.nome} url={l.foto_url} size={38} />
+            <Avatar name={l.nome} url={l.foto_url} size={36} />
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium text-text truncate">
+              <div className="text-sm font-medium text-text truncate">
                 {l.nome || l.telefone}
               </div>
-              <div className="text-[11px] text-muted-brand">{formatDate(l.criado_em)}</div>
+              <div className="text-xs text-muted-brand">{formatDate(l.criado_em)}</div>
             </div>
             <ScoreBadge score={l.score} status={l.status_atividade} />
             <StatusBadge status={l.status} />
@@ -495,14 +493,14 @@ export function VisaoGeral({
   const greet = h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
 
   return (
-    <div className="p-6 lg:p-10 pb-24 lg:pb-10">
+    <div className="p-6 lg:p-8 pb-24 lg:pb-8">
       {/* Header */}
-      <div className="mb-10 pb-7 border-b border-border-subtle flex flex-wrap gap-4 items-end justify-between">
+      <div className="mb-8 pb-6 border-b border-border-subtle flex flex-wrap gap-4 items-end justify-between">
         <div>
-          <h2 className="font-display text-[38px] font-light text-text leading-none tracking-[-0.5px]">
+          <h1 className="font-display text-3xl font-medium text-text leading-none">
             {greet} <em className="italic text-brand">hoje</em>
-          </h2>
-          <p className="text-[11px] text-muted-brand tracking-[0.12em] uppercase mt-1.5">
+          </h1>
+          <p className="text-[10px] text-muted-brand tracking-wider uppercase mt-2 font-semibold">
             Sistema de Relacionamento — VoraX
           </p>
         </div>
@@ -514,7 +512,7 @@ export function VisaoGeral({
               key={p}
               onClick={() => setPeriod(p)}
               className={cn(
-                "px-3.5 py-1.5 rounded-lg text-[11px] font-medium transition-all",
+                "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
                 period === p
                   ? "bg-brand text-white"
                   : "bg-surface-2 text-muted-brand border border-border-subtle hover:border-border-strong hover:text-text"
@@ -530,7 +528,7 @@ export function VisaoGeral({
       <AlertasBanner leads={leads} />
 
       {/* Metric cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <MetricCard
           label="Clientes captados"
           value={metrics.total}
@@ -556,34 +554,28 @@ export function VisaoGeral({
       </div>
 
       {/* Charts + Funnel */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-5 mb-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-6 mb-6">
         {/* Charts col */}
-        <div className="flex flex-col gap-5">
-          <div className="bg-surface border border-border-subtle rounded-[18px] p-7">
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-border-subtle">
-              <h2 className="font-display text-[17px] font-normal text-text tracking-[0.02em]">
-                Serviços mais agendados
-              </h2>
+        <div className="flex flex-col gap-6">
+          <div className="bg-surface border border-border-subtle rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-subtle">
+              <h2 className="font-display text-xl font-medium text-text">Serviços mais agendados</h2>
             </div>
             <ServiceChart agendamentos={agendamentos} />
           </div>
 
-          <div className="bg-surface border border-border-subtle rounded-[18px] p-7">
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-border-subtle">
-              <h2 className="font-display text-[17px] font-normal text-text tracking-[0.02em]">
-                Novos leads (7 dias)
-              </h2>
+          <div className="bg-surface border border-border-subtle rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-subtle">
+              <h2 className="font-display text-xl font-medium text-text">Novos leads (7 dias)</h2>
             </div>
             <TimelineChart leads={leads} />
           </div>
         </div>
 
         {/* Funnel col */}
-        <div className="bg-surface border border-border-subtle rounded-[18px] p-7">
-          <div className="flex items-center justify-between mb-5 pb-4 border-b border-border-subtle">
-            <h2 className="font-display text-[17px] font-normal text-text tracking-[0.02em]">
-              Funil de conversão
-            </h2>
+        <div className="bg-surface border border-border-subtle rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-subtle">
+            <h2 className="font-display text-xl font-medium text-text">Funil de conversão</h2>
           </div>
           <Funnel leads={filteredLeads} agendamentos={agendamentos} />
         </div>
