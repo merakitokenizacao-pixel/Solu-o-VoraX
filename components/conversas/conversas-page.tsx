@@ -46,6 +46,13 @@ function relativeTime(dateStr: string | null): string {
   return formatDate(dateStr);
 }
 
+function heatLabel(score: number) {
+  if (score >= 80) return { emoji: "🔥", label: "Quente", cls: "text-warning" };
+  if (score >= 60) return { emoji: "⚡", label: "Ativo", cls: "text-brand" };
+  if (score >= 40) return { emoji: "●", label: "Morno", cls: "text-muted-brand" };
+  return { emoji: "❄️", label: "Frio", cls: "text-info" };
+}
+
 function dayLabel(d: Date): string {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const cmp = new Date(d); cmp.setHours(0, 0, 0, 0);
@@ -132,7 +139,7 @@ function MsgBubble({ msg }: { msg: Conversa | { id: string; origem: string; mens
         <div className={cn(
           "px-3.5 py-2.5 text-[13.5px] leading-[1.55] word-break-all",
           isAgente && "bg-brand text-white rounded-[4px_16px_16px_16px]",
-          isHumano && "rounded-[4px_16px_16px_16px] border" ,
+          isHumano && "rounded-[4px_16px_16px_16px] border",
           !right && "bg-surface border border-border-subtle rounded-[4px_16px_16px_16px]",
           ("optimistic" in msg && msg.optimistic) && "opacity-60"
         )}
@@ -248,8 +255,14 @@ function ChatCol({
         <Avatar name={lead.nome} url={lead.foto_url} size={40} />
         <div className="flex-1 min-w-0">
           <h3 className="font-display text-[20px] font-medium leading-tight">{lead.nome || lead.telefone}</h3>
-          <div className="flex items-center gap-2 text-[11px] text-muted-brand font-mono mt-0.5">
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-brand font-mono mt-0.5 flex-wrap">
             <span>{formatPhone(lead.telefone)}</span>
+            {(() => { const h = heatLabel(lead.score ?? 0); return (
+              <><span className="opacity-40">·</span>
+              <span>{h.emoji} <span className={h.cls}>{h.label}</span></span>
+              <span className="opacity-40">·</span>
+              <span>{lead.score ?? 0}</span></>
+            ); })()}
             {localLead.ia_pausada && (
               <>
                 <span className="opacity-40">·</span>
@@ -327,79 +340,183 @@ function ChatCol({
 }
 
 // — Details panel —
-function DetailsPanel({ lead, agendamentos }: { lead: Lead; agendamentos: Agendamento[] }) {
-  const leadAgends = agendamentos.filter((a) => a.lead_id === lead.id).sort((a, b) => new Date(b.data_agendamento ?? 0).getTime() - new Date(a.data_agendamento ?? 0).getTime());
-  const ltv = leadAgends.filter((a) => a.status !== "cancelado" && a.valor).reduce((s, a) => s + Number(a.valor ?? 0), 0);
+function DetailsPanel({ lead, agendamentos, onLeadUpdate }: {
+  lead: Lead;
+  agendamentos: Agendamento[];
+  onLeadUpdate?: (l: Lead) => void;
+}) {
+  const [localLead, setLocalLead] = useState(lead);
+  useEffect(() => { setLocalLead(lead); }, [lead]);
+
+  const leadAgends = agendamentos
+    .filter((a) => a.lead_id === lead.id)
+    .sort((a, b) => new Date(b.data_agendamento ?? 0).getTime() - new Date(a.data_agendamento ?? 0).getTime());
+  const ltv = leadAgends
+    .filter((a) => a.status !== "cancelado" && a.valor)
+    .reduce((s, a) => s + Number(a.valor ?? 0), 0);
+
+  async function toggleFollowUp() {
+    const sb = createClient();
+    const next = !localLead.followup_optout;
+    const { error } = await sb.from("leads").update({ followup_optout: next }).eq("id", lead.id);
+    if (error) { toast.error("Erro: " + error.message); return; }
+    const updated = { ...localLead, followup_optout: next };
+    setLocalLead(updated);
+    onLeadUpdate?.(updated);
+    toast.success(next ? "Follow-up pausado" : "Follow-up reativado");
+  }
 
   return (
-    <div className="bg-surface overflow-y-auto flex flex-col">
+    <div className="bg-surface overflow-y-auto flex flex-col h-full">
       {/* Lead header */}
-      <div className="px-5 pt-5 pb-4 border-b border-border-subtle flex items-center gap-3">
-        <Avatar name={lead.nome} url={lead.foto_url} size={48} />
-        <div className="min-w-0">
-          <h4 className="font-display text-[22px] font-medium leading-tight text-text">{lead.nome || "—"}</h4>
-          <p className="text-[11px] text-muted-brand mt-0.5">{formatPhone(lead.telefone)}</p>
+      <div className="px-5 pt-6 pb-4 border-b border-border-subtle">
+        <div className="flex items-start gap-3 mb-3">
+          <Avatar name={lead.nome} url={lead.foto_url} size={52} />
+          <div className="min-w-0 flex-1 pt-0.5">
+            <h4 className="font-display text-[19px] font-medium leading-tight text-text">{lead.nome || "—"}</h4>
+            <p className="text-[11px] text-muted-brand font-mono mt-0.5">{formatPhone(lead.telefone)}</p>
+          </div>
+        </div>
+        {lead.segmento && (
+          <span className={cn("inline-block text-[9px] font-bold tracking-[0.1em] px-2.5 py-1 rounded-full uppercase", SEGMENTO_STYLES[lead.segmento] ?? "bg-surface-2 text-muted-brand")}>
+            {lead.segmento.replace("_", " ")}
+          </span>
+        )}
+      </div>
+
+      {/* LTV proeminente */}
+      <div className="px-5 py-4 border-b border-border-subtle">
+        <div className="text-[9px] font-bold tracking-[0.14em] text-muted-brand uppercase mb-1.5">Valor Total do Cliente</div>
+        <div className="font-mono text-[28px] font-semibold text-brand leading-none mb-3">
+          {ltv > 0 ? formatCurrency(ltv) : "R$ 0"}
+        </div>
+        <div className="flex items-center gap-4">
+          <div>
+            <div className="text-[8px] text-muted-brand uppercase tracking-[0.1em]">Agendamentos</div>
+            <div className="font-mono text-[15px] font-bold text-text">{leadAgends.length}</div>
+          </div>
+          <div className="w-px h-7 bg-border-subtle" />
+          <div>
+            <div className="text-[8px] text-muted-brand uppercase tracking-[0.1em]">Realizados</div>
+            <div className="font-mono text-[15px] font-bold text-success">{leadAgends.filter((a) => a.status === "realizado").length}</div>
+          </div>
+          <div className="w-px h-7 bg-border-subtle" />
+          <div>
+            <div className="text-[8px] text-muted-brand uppercase tracking-[0.1em]">Score</div>
+            <div className="font-mono text-[15px] font-bold text-text">{lead.score ?? 0}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contato */}
+      <div className="px-5 py-4 border-b border-border-subtle">
+        <div className="text-[9px] font-bold tracking-[0.14em] text-muted-brand uppercase mb-2.5">Contato</div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Phone size={11} className="text-muted-brand shrink-0" />
+            <span className="font-mono text-[12px] text-text">{formatPhone(lead.telefone)}</span>
+          </div>
+          <div className="flex items-center gap-2 text-[12px]">
+            <span className="text-muted-brand text-[10px]">Origem:</span>
+            <span className="text-text-2 capitalize">{lead.canal || "whatsapp"}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Follow-up automático */}
+      <div className="px-5 py-4 border-b border-border-subtle">
+        <div className="text-[9px] font-bold tracking-[0.14em] text-muted-brand uppercase mb-2.5">Follow-up Automático</div>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className={cn("text-[12.5px] font-semibold", localLead.followup_optout ? "text-danger" : "text-success")}>
+              {localLead.followup_optout ? "Pausado" : "Ativo"}
+            </div>
+            <div className="text-[10.5px] text-muted-brand mt-0.5 leading-snug">
+              {localLead.followup_optout ? "Sem envios automáticos" : "Conforme cadência"}
+            </div>
+          </div>
+          <button
+            onClick={toggleFollowUp}
+            className={cn(
+              "w-11 h-6 rounded-full transition-all duration-200 relative shrink-0 focus:outline-none",
+              localLead.followup_optout ? "bg-surface-3" : "bg-success"
+            )}
+          >
+            <span className={cn(
+              "absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-200",
+              localLead.followup_optout ? "left-0.5" : "left-5"
+            )} />
+          </button>
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div className="px-5 py-4 border-b border-border-subtle">
+        <div className="text-[9px] font-bold tracking-[0.14em] text-muted-brand uppercase mb-2.5">Tags</div>
+        <div className="flex flex-wrap gap-1.5">
           {lead.segmento && (
-            <span className={cn("inline-block mt-1.5 text-[9.5px] font-bold tracking-[0.08em] px-2.5 py-0.5 rounded-full uppercase", SEGMENTO_STYLES[lead.segmento] ?? "bg-surface-2 text-muted-brand")}>
-              {lead.segmento}
+            <span className={cn("text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-[0.06em]", SEGMENTO_STYLES[lead.segmento] ?? "bg-surface-2 text-muted-brand")}>
+              {lead.segmento.replace("_", " ")}
             </span>
           )}
-        </div>
-      </div>
-
-      {/* Metrics */}
-      <div className="grid grid-cols-2 gap-2 px-5 py-3 border-b border-border-subtle">
-        {[
-          { label: "LTV", value: ltv > 0 ? formatCurrency(ltv) : "—" },
-          { label: "Agendamentos", value: leadAgends.length },
-          { label: "Realizados", value: leadAgends.filter((a) => a.status === "realizado").length },
-          { label: "Score", value: lead.score },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-surface-2 rounded-xl px-3 py-2.5">
-            <div className="text-[9px] font-bold tracking-[0.1em] text-muted-brand mb-1 uppercase">{label}</div>
-            <div className="font-mono text-[16px] font-semibold text-brand">{value}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* IA analysis */}
-      {lead.analise_motivo && (
-        <div className="px-5 py-4 border-b border-border-subtle">
-          <div className="text-[9px] font-bold tracking-[0.12em] text-muted-brand mb-2 uppercase">Análise IA — Sumiço</div>
-          <div className="text-[12px] font-semibold text-text capitalize">{lead.analise_motivo}</div>
-          {lead.analise_resumo && (
-            <p className="text-[11.5px] text-text-2 italic mt-1.5 leading-relaxed pl-2.5 border-l-2 border-brand">{lead.analise_resumo}</p>
+          {(lead.score ?? 0) >= 70 && (
+            <span className="text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-[0.06em] bg-brand-light text-brand border border-brand/20">
+              Prioridade
+            </span>
+          )}
+          {lead.status_atividade === "dormente" && (
+            <span className="text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-[0.06em] bg-warning-bg text-warning">
+              Dormente
+            </span>
+          )}
+          {localLead.ia_pausada && (
+            <span className="text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-[0.06em] bg-danger-bg text-danger">
+              IA pausada
+            </span>
+          )}
+          {!lead.segmento && (lead.score ?? 0) < 70 && !localLead.ia_pausada && lead.status_atividade !== "dormente" && (
+            <span className="text-[11px] text-muted-brand">—</span>
           )}
         </div>
-      )}
+      </div>
 
-      {/* Recent appointments */}
+      {/* Análise IA — sempre visível */}
+      <div className="px-5 py-4 border-b border-border-subtle">
+        <div className="text-[9px] font-bold tracking-[0.14em] text-muted-brand uppercase mb-2">Análise IA</div>
+        {lead.analise_motivo ? (
+          <>
+            <div className="text-[12px] font-semibold text-text capitalize">{lead.analise_motivo.replace(/_/g, " ")}</div>
+            {lead.analise_resumo && (
+              <p className="text-[11px] text-text-2 italic mt-1.5 leading-relaxed pl-2.5 border-l-2 border-brand/40">{lead.analise_resumo}</p>
+            )}
+          </>
+        ) : (
+          <div className="flex items-center gap-2 text-[11.5px] text-muted-brand">
+            <span className="w-1.5 h-1.5 rounded-full bg-surface-3 inline-block shrink-0" />
+            Análise não disponível
+          </div>
+        )}
+      </div>
+
+      {/* Histórico */}
       {leadAgends.length > 0 && (
-        <div className="px-5 py-4 border-b border-border-subtle">
-          <div className="text-[9px] font-bold tracking-[0.12em] text-muted-brand mb-2.5 uppercase">Histórico</div>
-          <div className="flex flex-col gap-2">
-            {leadAgends.slice(0, 4).map((a) => (
-              <div key={a.id} className="grid grid-cols-[40px_1fr] gap-2 text-[11.5px]">
-                <div className="font-mono text-muted-brand text-[10px] leading-tight">
+        <div className="px-5 py-4">
+          <div className="text-[9px] font-bold tracking-[0.14em] text-muted-brand uppercase mb-2.5">Histórico</div>
+          <div className="flex flex-col gap-3">
+            {leadAgends.slice(0, 5).map((a) => (
+              <div key={a.id} className="grid grid-cols-[44px_1fr] gap-2">
+                <div className="font-mono text-muted-brand text-[10px] leading-tight pt-0.5">
                   {a.data_agendamento ? new Date(a.data_agendamento).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }) : "—"}
                 </div>
                 <div>
-                  <div className="text-text leading-tight">{a.servico || "Serviço"}</div>
-                  {a.valor && <div className="text-brand font-semibold font-mono text-[10px]">{formatCurrency(a.valor)}</div>}
+                  <div className="text-[11.5px] text-text leading-tight">{a.servico || "Serviço"}</div>
+                  {a.valor && <div className="text-brand font-semibold font-mono text-[10px] mt-0.5">{formatCurrency(a.valor)}</div>}
                 </div>
               </div>
             ))}
           </div>
         </div>
       )}
-
-      {/* Follow-up status */}
-      <div className="px-5 py-4">
-        <div className="text-[9px] font-bold tracking-[0.12em] text-muted-brand mb-1 uppercase">Follow-up</div>
-        <div className={cn("text-[12.5px]", lead.followup_optout ? "text-danger" : "text-success")}>
-          {lead.followup_optout ? "Pausado (opt-out)" : "Ativo"}
-        </div>
-      </div>
     </div>
   );
 }
@@ -522,8 +639,8 @@ export function ConversasPage({
             />
           </div>
           {/* Details panel */}
-          <div className="hidden xl:block w-[280px] shrink-0 overflow-y-auto border-l border-border-subtle">
-            <DetailsPanel lead={selectedLead} agendamentos={agendamentos} />
+          <div className="hidden xl:flex xl:flex-col w-[300px] shrink-0 border-l border-border-subtle overflow-hidden">
+            <DetailsPanel lead={selectedLead} agendamentos={agendamentos} onLeadUpdate={handleLeadUpdate} />
           </div>
         </>
       ) : (

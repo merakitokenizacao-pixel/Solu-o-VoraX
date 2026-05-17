@@ -37,7 +37,7 @@ const PERIOD_LABELS: Record<Period, string> = {
   tudo: "Tudo",
 };
 
-const CHART_COLORS = ["#9b7d5a", "#3a6b4f", "#2a5278", "#b8955a", "#6c5ce7", "#e74c3c"];
+const CHART_COLORS = ["#9b7d5a", "#3a6b4f", "#2a5278", "#b8955a", "#5c4fa0", "#b03030"];
 
 function periodStart(period: Period): Date | null {
   if (period === "tudo") return null;
