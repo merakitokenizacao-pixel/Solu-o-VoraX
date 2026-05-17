@@ -256,11 +256,11 @@ export function ClientesPage({
   }).length;
 
   return (
-    <div className="p-6 lg:p-10 pb-24 lg:pb-10">
+    <div className="p-6 lg:p-8 pb-24 lg:pb-8">
       {/* Header */}
       <div className="mb-6 flex flex-wrap gap-3 items-center justify-between">
         <div>
-          <p className="text-[11px] text-muted-brand uppercase tracking-[0.12em]">
+          <p className="text-[10px] text-muted-brand uppercase tracking-wider font-semibold">
             {leads.length} clientes{todayCount > 0 && ` · ${todayCount} novos hoje`}
           </p>
         </div>
@@ -271,17 +271,17 @@ export function ClientesPage({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nome ou telefone..."
-            className="w-full pl-9 pr-4 py-2 bg-surface border border-border-subtle rounded-xl text-[13px] text-text placeholder:text-muted-brand focus:outline-none focus:border-brand transition-colors"
+            className="w-full pl-9 pr-4 py-2 bg-surface border border-border-subtle rounded-xl text-sm text-text placeholder:text-muted-brand focus:outline-none focus:border-brand transition-colors"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-surface border border-border-subtle rounded-[18px] overflow-hidden">
+      <div className="bg-surface border border-border-subtle rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-border-subtle">
+              <tr className="bg-surface-2 border-b border-border-subtle">
                 {[
                   { col: "nome", label: "Cliente" },
                   { col: null, label: "Telefone" },
@@ -294,8 +294,8 @@ export function ClientesPage({
                     key={label}
                     onClick={() => col && toggleSort(col as SortCol)}
                     className={cn(
-                      "text-left px-4 py-3 text-[9px] text-muted-brand font-semibold uppercase tracking-[0.14em]",
-                      col && "cursor-pointer hover:text-text select-none"
+                      "text-left px-4 py-3 text-[10px] text-muted-brand font-semibold uppercase tracking-wider",
+                      col && "cursor-pointer hover:text-text select-none transition-colors"
                     )}
                   >
                     <div className="flex items-center gap-1">
@@ -318,24 +318,24 @@ export function ClientesPage({
                   <tr
                     key={l.id}
                     onClick={() => setSelected(l)}
-                    className="border-b border-border-subtle last:border-0 cursor-pointer hover:bg-surface-2 transition-colors"
+                    className="border-b border-border-subtle last:border-0 cursor-pointer hover:bg-surface-2/50 transition-colors"
                   >
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-2">
-                        <Avatar name={l.nome} url={l.foto_url} size={30} />
-                        <span className="text-[13px] font-medium text-text">{l.nome || "—"}</span>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar name={l.nome} url={l.foto_url} size={32} />
+                        <span className="text-sm font-medium text-text">{l.nome || "—"}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3.5 text-[11px] text-muted-brand font-mono">
+                    <td className="px-4 py-3 text-xs text-muted-brand font-mono tabular-nums">
                       {formatPhone(l.telefone)}
                     </td>
-                    <td className="px-4 py-3.5 text-[11px] text-muted-brand">{l.canal}</td>
-                    <td className="px-4 py-3.5">
-                      <span className={cn("text-[9px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-[0.08em]", STATUS_STYLES[l.status] ?? "bg-surface-2 text-muted-brand")}>
+                    <td className="px-4 py-3 text-xs text-muted-brand capitalize">{l.canal}</td>
+                    <td className="px-4 py-3">
+                      <span className={cn("text-[9px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider", STATUS_STYLES[l.status] ?? "bg-surface-2 text-muted-brand")}>
                         {l.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <ScoreBadge score={l.score} status={l.status_atividade} />
                         <span className={cn("text-[9px] font-semibold capitalize", {
@@ -347,7 +347,7 @@ export function ClientesPage({
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3.5 text-[11px] text-muted-brand font-mono">
+                    <td className="px-4 py-3 text-xs text-muted-brand font-mono tabular-nums">
                       {formatDate(l.criado_em)}
                     </td>
                   </tr>
