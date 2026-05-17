@@ -1,13 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { ConversasPage } from "@/components/conversas/conversas-page";
 
 export default async function ConversasRoute() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
   const [{ data: leads }, { data: conversas }, { data: agendamentos }] = await Promise.all([
     supabase.from("leads").select("*").order("criado_em", { ascending: false }),

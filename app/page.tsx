@@ -1,7 +1,6 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { VisaoGeral } from "@/components/dashboard/visao-geral";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
@@ -9,8 +8,6 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
   const [{ data: leads }, { data: agendamentos }] = await Promise.all([
     supabase.from("leads").select("*").order("criado_em", { ascending: false }),
