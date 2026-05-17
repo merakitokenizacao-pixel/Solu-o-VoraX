@@ -287,7 +287,7 @@ function WeekGrid({
               </span>
               <span
                 className={cn(
-                  "font-display text-[20px] font-light leading-none",
+                  "font-mono text-[20px] font-light leading-none",
                   isToday
                     ? "w-8 h-8 flex items-center justify-center rounded-full bg-brand text-white text-[16px]"
                     : "text-text"

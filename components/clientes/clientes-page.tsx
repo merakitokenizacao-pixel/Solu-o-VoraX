@@ -47,11 +47,13 @@ const MOTIVO_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 function Avatar({ name, url, size = 36 }: { name: string | null; url?: string | null; size?: number }) {
+  const [imgError, setImgError] = useState(false);
   const [bg, fg] = getAvatarColors(name);
-  if (url && url !== "null" && url !== "=" && url !== "undefined") {
+  if (!imgError && url && url !== "null" && url !== "=" && url !== "undefined") {
     return (
       <img src={url} alt={name ?? ""} width={size} height={size}
-        className="rounded-full object-cover shrink-0" style={{ width: size, height: size }} />
+        className="rounded-full object-cover shrink-0" style={{ width: size, height: size }}
+        onError={() => setImgError(true)} />
     );
   }
   return (

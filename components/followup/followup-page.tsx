@@ -39,9 +39,17 @@ const FILTER_LABELS: Record<FupStatus, string> = {
 };
 
 function Avatar({ name, url, size = 44 }: { name: string | null; url?: string | null; size?: number }) {
+  const [imgError, setImgError] = useState(false);
   const [bg, fg] = getAvatarColors(name);
-  if (url && url !== "null" && url !== "=" && url !== "undefined") {
-    return <img src={url} alt={name ?? ""} width={size} height={size} className="rounded-full object-cover shrink-0" style={{ width: size, height: size }} />;
+  if (!imgError && url && url !== "null" && url !== "=" && url !== "undefined") {
+    return (
+      <img
+        src={url} alt={name ?? ""} width={size} height={size}
+        className="rounded-full object-cover shrink-0"
+        style={{ width: size, height: size }}
+        onError={() => setImgError(true)}
+      />
+    );
   }
   return (
     <div className="rounded-full flex items-center justify-center shrink-0 text-[13px] font-medium"
@@ -155,7 +163,7 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
               strokeDasharray={C.toFixed(2)} strokeDashoffset={offset.toFixed(2)} strokeLinecap="round"
               className="transition-all duration-700" />
           </svg>
-          <div className="font-display text-[64px] font-light leading-none text-text tracking-[-2px]">
+          <div className="font-mono text-[64px] font-light leading-none text-text tracking-[-2px]">
             {taxa}<span className="text-[28px] text-brand align-top leading-[1.2]">%</span>
           </div>
         </div>
@@ -170,7 +178,7 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
           <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.16em]">Receita Recuperada</span>
           <div className="w-6 h-6 rounded-full bg-success-bg text-success flex items-center justify-center text-xs">💰</div>
         </div>
-        <div className="font-display text-[32px] font-light text-text leading-none">
+        <div className="font-mono text-[32px] font-light text-text leading-none">
           {formatCurrency(receita)}
         </div>
         <span className="text-[11px] text-muted-brand">via follow-ups convertidos</span>
@@ -182,7 +190,7 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
           <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.16em]">Envios Este Mês</span>
           <div className="w-6 h-6 rounded-full bg-info-bg text-info flex items-center justify-center text-xs">✉️</div>
         </div>
-        <div className="font-display text-[36px] font-light text-text leading-none">{enviadosMes}</div>
+        <div className="font-mono text-[36px] font-light text-text leading-none">{enviadosMes}</div>
         <div className={cn("inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full w-fit",
           enviadosMes > enviadosMesAnt ? "bg-success-bg text-success" : enviadosMes < enviadosMesAnt ? "bg-danger-bg text-danger" : "bg-surface-2 text-muted-brand")}>
           {enviadosMes > enviadosMesAnt ? "▲" : enviadosMes < enviadosMesAnt ? "▼" : "•"} vs {enviadosMesAnt} mês anterior
@@ -195,7 +203,7 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
           <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.16em]">Aguardando Resposta</span>
           <div className="w-6 h-6 rounded-full bg-warning-bg text-warning flex items-center justify-center text-xs">⏳</div>
         </div>
-        <div className="font-display text-[36px] font-light text-text leading-none">{aguardando}</div>
+        <div className="font-mono text-[36px] font-light text-text leading-none">{aguardando}</div>
         <span className="text-[11px] text-muted-brand">{aguardando === 1 ? "cliente" : "clientes"} sem agendamento ainda</span>
       </div>
     </div>
@@ -305,6 +313,61 @@ function FupCard({ item, onOptoutToggle }: { item: FupItem; onOptoutToggle: (id:
   );
 }
 
+// — Distribuição por Segmento —
+const SEGMENTO_META: Record<string, { label: string; color: string; bg: string }> = {
+  vip:        { label: "VIP",        color: "text-[#412402]", bg: "bg-[#fac775]" },
+  recorrente: { label: "Recorrente", color: "text-[#173404]", bg: "bg-[#c0dd97]" },
+  casual:     { label: "Casual",     color: "text-[#2a5278]", bg: "bg-[#e8f0f8]" },
+  em_risco:   { label: "Em risco",   color: "text-[#4a1b0c]", bg: "bg-[#f5c4b3]" },
+  novo:       { label: "Novo",       color: "text-[#2c2c2a]", bg: "bg-[#d3d1c7]" },
+};
+
+function SegmentoDistribuicao({ items }: { items: FupItem[] }) {
+  const total = items.length;
+  if (total === 0) return null;
+
+  const stats = Object.keys(SEGMENTO_META).map((seg) => {
+    const grupo = items.filter((i) => (i.lead as Lead).segmento === seg);
+    const recuperados = grupo.filter((i) => i.status === "recuperou").length;
+    return { seg, count: grupo.length, recuperados, taxa: grupo.length > 0 ? Math.round((recuperados / grupo.length) * 100) : 0 };
+  }).filter((s) => s.count > 0);
+
+  const maxCount = Math.max(...stats.map((s) => s.count), 1);
+
+  return (
+    <div className="bg-surface border border-border-subtle rounded-[18px] p-6 mb-6">
+      <h3 className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.14em] mb-4">Distribuição por Segmento</h3>
+      <div className="flex flex-col gap-3">
+        {stats.map(({ seg, count, recuperados, taxa }) => {
+          const meta = SEGMENTO_META[seg];
+          const pct = Math.round((count / total) * 100);
+          const barW = Math.round((count / maxCount) * 100);
+          return (
+            <div key={seg} className="flex items-center gap-3">
+              <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-full w-20 text-center shrink-0", meta.bg, meta.color)}>
+                {meta.label}
+              </span>
+              <div className="flex-1 relative h-5 bg-surface-2 rounded-full overflow-hidden">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full bg-brand/25 transition-all duration-500"
+                  style={{ width: `${barW}%` }}
+                />
+                <span className="absolute inset-0 flex items-center px-2.5 text-[10px] font-semibold text-text">
+                  {count} lead{count !== 1 ? "s" : ""} · {pct}%
+                </span>
+              </div>
+              <div className="text-right shrink-0 w-24">
+                <span className="text-[10px] font-semibold text-success">{recuperados} recuper.</span>
+                <span className="text-[10px] text-muted-brand ml-1">({taxa}%)</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // — Main —
 export function FollowupPage({
   followups,
@@ -348,6 +411,7 @@ export function FollowupPage({
   return (
     <div className="p-6 lg:p-10 pb-24 lg:pb-10">
       <FupMetrics items={items} agendamentos={agendamentos} />
+      <SegmentoDistribuicao items={items} />
 
       {/* Filter chips */}
       <div className="flex flex-wrap gap-2 mb-6">

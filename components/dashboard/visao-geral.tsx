@@ -75,9 +75,10 @@ function filterByPeriod<T extends Record<string, unknown>>(
 
 // — Avatar —
 function Avatar({ name, url, size = 36 }: { name: string | null; url?: string | null; size?: number }) {
+  const [imgError, setImgError] = useState(false);
   const initials = getInitials(name);
   const [bg, fg] = getAvatarColors(name);
-  if (url && url !== "null" && url !== "undefined" && url !== "=") {
+  if (!imgError && url && url !== "null" && url !== "undefined" && url !== "=") {
     return (
       <img
         src={url}
@@ -86,6 +87,7 @@ function Avatar({ name, url, size = 36 }: { name: string | null; url?: string | 
         height={size}
         className="rounded-full object-cover shrink-0"
         style={{ width: size, height: size }}
+        onError={() => setImgError(true)}
       />
     );
   }
@@ -213,7 +215,7 @@ function MetricCard({
       <div className="text-[9px] text-muted-brand font-medium uppercase tracking-[0.18em] mb-3.5">
         {label}
       </div>
-      <div className="font-display text-[44px] font-light leading-none mb-2.5 text-text">
+      <div className="font-mono text-[44px] font-light leading-none mb-2.5 text-text">
         {value}
       </div>
       <div className="w-6 h-px bg-gold opacity-50 mb-2.5" />
@@ -274,7 +276,7 @@ function Funnel({
             <span className="text-[11px] text-muted-brand uppercase tracking-[0.08em]">
               {s.label}
             </span>
-            <span className="font-display text-[22px] font-light text-text">{s.count}</span>
+            <span className="font-mono text-[22px] font-light text-text">{s.count}</span>
           </div>
           <div className="h-0.5 bg-surface-3 rounded-full overflow-hidden">
             <div

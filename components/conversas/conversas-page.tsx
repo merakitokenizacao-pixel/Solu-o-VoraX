@@ -56,9 +56,14 @@ function dayLabel(d: Date): string {
 }
 
 function Avatar({ name, url, size = 40 }: { name: string | null; url?: string | null; size?: number }) {
+  const [imgError, setImgError] = useState(false);
   const [bg, fg] = getAvatarColors(name);
-  if (url && url !== "null" && url !== "=" && url !== "undefined") {
-    return <img src={url} alt={name ?? ""} width={size} height={size} className="rounded-full object-cover shrink-0" style={{ width: size, height: size }} />;
+  if (!imgError && url && url !== "null" && url !== "=" && url !== "undefined") {
+    return (
+      <img src={url} alt={name ?? ""} width={size} height={size}
+        className="rounded-full object-cover shrink-0" style={{ width: size, height: size }}
+        onError={() => setImgError(true)} />
+    );
   }
   return (
     <div className="rounded-full flex items-center justify-center shrink-0 text-[11px] font-medium"

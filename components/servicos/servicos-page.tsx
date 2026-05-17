@@ -54,12 +54,12 @@ function ServicoCard({ servico, onEdit }: { servico: Servico; onEdit: () => void
       <div className="flex items-center gap-3 flex-wrap">
         <div>
           <div className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.1em]">Preço</div>
-          <div className="font-display text-[22px] font-light text-brand">{formatCurrency(servico.preco)}</div>
+          <div className="font-mono text-[22px] font-light text-brand">{formatCurrency(servico.preco)}</div>
         </div>
         {servico.preco_pacote && (
           <div>
             <div className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.1em]">Pacote</div>
-            <div className="font-display text-[18px] font-light text-success">{formatCurrency(servico.preco_pacote)}</div>
+            <div className="font-mono text-[18px] font-light text-success">{formatCurrency(servico.preco_pacote)}</div>
           </div>
         )}
         <div className="ml-auto text-right">
@@ -304,7 +304,7 @@ export function ServicosPage({ servicos: initial, clinica }: { servicos: Servico
             ].map(({ label, value }) => (
               <div key={label} className="bg-surface border border-border-subtle rounded-[18px] px-5 py-4">
                 <div className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.14em] mb-2">{label}</div>
-                <div className="font-display text-[28px] font-light text-text">{value}</div>
+                <div className="font-mono text-[28px] font-light text-text">{value}</div>
               </div>
             ))}
           </div>
