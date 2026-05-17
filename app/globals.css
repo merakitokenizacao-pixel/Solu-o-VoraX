@@ -1,26 +1,234 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/* ─── Shadcn bridge (mantém componentes funcionando) ─── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+
+  /* ─── VoraX brand tokens → utilidades Tailwind ─── */
+  --color-bg: var(--vorax-bg);
+  --color-surface: var(--vorax-surface);
+  --color-surface-2: var(--vorax-surface2);
+  --color-surface-3: var(--vorax-surface3);
+  --color-border-subtle: var(--vorax-border);
+  --color-border-strong: var(--vorax-border2);
+  --color-text: var(--vorax-text);
+  --color-text-2: var(--vorax-text2);
+  --color-muted-brand: var(--vorax-muted);
+  --color-brand: var(--vorax-accent);
+  --color-brand-dark: var(--vorax-accent2);
+  --color-brand-light: var(--vorax-accent-light);
+  --color-gold: var(--vorax-gold);
+  --color-gold-light: var(--vorax-gold-light);
+  --color-success: var(--vorax-green);
+  --color-success-bg: var(--vorax-green-bg);
+  --color-warning: var(--vorax-amber);
+  --color-warning-bg: var(--vorax-amber-bg);
+  --color-danger: var(--vorax-red);
+  --color-danger-bg: var(--vorax-red-bg);
+  --color-info: var(--vorax-blue);
+  --color-info-bg: var(--vorax-blue-bg);
+  --color-tier-diamond: var(--vorax-tier-diamond);
+  --color-tier-gold: var(--vorax-tier-gold);
+  --color-tier-silver: var(--vorax-tier-silver);
+  --color-tier-bronze: var(--vorax-tier-bronze);
+  --color-tier-cold: var(--vorax-tier-cold);
+  --color-tier-perdida: var(--vorax-tier-perdida);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Modo claro (light) ─── */
+:root {
+  /* Shadcn overrides — mapeados pro brand VoraX */
+  --background: #f8f6f2;
+  --foreground: #1a1814;
+  --card: #ffffff;
+  --card-foreground: #1a1814;
+  --popover: #ffffff;
+  --popover-foreground: #1a1814;
+  --primary: #9b7d5a;
+  --primary-foreground: #ffffff;
+  --secondary: #f2efe9;
+  --secondary-foreground: #3d3930;
+  --muted: #f2efe9;
+  --muted-foreground: #8a8478;
+  --accent: #f5ede0;
+  --accent-foreground: #3d3930;
+  --destructive: #b03030;
+  --border: #e0dbd2;
+  --input: #e0dbd2;
+  --ring: #9b7d5a;
+  --radius: 0.75rem;
+
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #3d3930;
+  --sidebar-primary: #9b7d5a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5ede0;
+  --sidebar-accent-foreground: #3d3930;
+  --sidebar-border: #e0dbd2;
+  --sidebar-ring: #9b7d5a;
+
+  /* Charts */
+  --chart-1: #9b7d5a;
+  --chart-2: #3a6b4f;
+  --chart-3: #2a5278;
+  --chart-4: #b8955a;
+  --chart-5: #5c4fa0;
+
+  /* ─── VoraX brand tokens ─── */
+  --vorax-bg: #f8f6f2;
+  --vorax-surface: #ffffff;
+  --vorax-surface2: #f2efe9;
+  --vorax-surface3: #e8e4dc;
+  --vorax-border: #e0dbd2;
+  --vorax-border2: #c8c2b8;
+  --vorax-text: #1a1814;
+  --vorax-text2: #3d3930;
+  --vorax-muted: #8a8478;
+  --vorax-accent: #9b7d5a;
+  --vorax-accent2: #7a6244;
+  --vorax-accent-light: #f5ede0;
+  --vorax-gold: #b8955a;
+  --vorax-gold-light: #f7f0e4;
+  --vorax-green: #3a6b4f;
+  --vorax-green-bg: #e8f4ed;
+  --vorax-amber: #b5600a;
+  --vorax-amber-bg: #fdf0e0;
+  --vorax-red: #b03030;
+  --vorax-red-bg: #fce8e8;
+  --vorax-blue: #2a5278;
+  --vorax-blue-bg: #e8f0f8;
+  --vorax-purple: #5c4fa0;
+  --vorax-purple-bg: #eeebf8;
+
+  /* Score tiers */
+  --vorax-tier-diamond: #c0dd97;
+  --vorax-tier-gold: #fac775;
+  --vorax-tier-silver: #f7d6a3;
+  --vorax-tier-bronze: #f5c4b3;
+  --vorax-tier-cold: #e8c3b8;
+  --vorax-tier-perdida: #d3d1c7;
+}
+
+/* ─── Modo escuro ─── */
+.dark {
+  --background: #111009;
+  --foreground: #f0ece4;
+  --card: #1a1814;
+  --card-foreground: #f0ece4;
+  --popover: #1a1814;
+  --popover-foreground: #f0ece4;
+  --primary: #b8955a;
+  --primary-foreground: #111009;
+  --secondary: #2a2620;
+  --secondary-foreground: #d4cfc8;
+  --muted: #2a2620;
+  --muted-foreground: #6b6560;
+  --accent: #2d2820;
+  --accent-foreground: #d4cfc8;
+  --destructive: #cf5050;
+  --border: rgba(240, 236, 228, 0.10);
+  --input: rgba(240, 236, 228, 0.12);
+  --ring: #b8955a;
+
+  --sidebar: #1a1814;
+  --sidebar-foreground: #d4cfc8;
+  --sidebar-primary: #b8955a;
+  --sidebar-primary-foreground: #111009;
+  --sidebar-accent: #2d2820;
+  --sidebar-accent-foreground: #d4cfc8;
+  --sidebar-border: rgba(240, 236, 228, 0.10);
+  --sidebar-ring: #b8955a;
+
+  --chart-1: #b8955a;
+  --chart-2: #5a9b78;
+  --chart-3: #5a8ab8;
+  --chart-4: #d4a870;
+  --chart-5: #8878c8;
+
+  /* ─── VoraX brand tokens dark ─── */
+  --vorax-bg: #111009;
+  --vorax-surface: #1a1814;
+  --vorax-surface2: #201e18;
+  --vorax-surface3: #2a2620;
+  --vorax-border: rgba(240, 236, 228, 0.10);
+  --vorax-border2: rgba(240, 236, 228, 0.20);
+  --vorax-text: #f0ece4;
+  --vorax-text2: #d4cfc8;
+  --vorax-muted: #6b6560;
+  --vorax-accent: #b8955a;
+  --vorax-accent2: #d4a870;
+  --vorax-accent-light: #2d2820;
+  --vorax-gold: #d4a870;
+  --vorax-gold-light: #2d2820;
+  --vorax-green: #5a9b78;
+  --vorax-green-bg: #182820;
+  --vorax-amber: #d4800a;
+  --vorax-amber-bg: #2d2010;
+  --vorax-red: #cf5050;
+  --vorax-red-bg: #2d1818;
+  --vorax-blue: #5a8ab8;
+  --vorax-blue-bg: #182030;
+  --vorax-purple: #8878c8;
+  --vorax-purple-bg: #201830;
+
+  --vorax-tier-diamond: #8aaf5a;
+  --vorax-tier-gold: #d4a050;
+  --vorax-tier-silver: #c8a870;
+  --vorax-tier-bronze: #c8887a;
+  --vorax-tier-cold: #c09090;
+  --vorax-tier-perdida: #787870;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-bg text-text;
+  }
+  html {
+    @apply font-sans;
+  }
 }
