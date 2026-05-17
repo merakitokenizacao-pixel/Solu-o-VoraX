@@ -148,13 +148,12 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
   const offset = C * (1 - taxa / 100);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-5 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-6 mb-8">
       {/* Hero */}
-      <div className="relative bg-gradient-to-br from-surface to-surface-2 border border-border-subtle rounded-[18px] p-7 overflow-hidden hover:shadow-md hover:border-border-strong transition-all">
+      <div className="relative bg-gradient-to-br from-surface to-surface-2 border border-border-subtle rounded-2xl p-6 overflow-hidden hover:shadow-md hover:border-border-strong transition-all">
         <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-radial from-brand/12 to-transparent pointer-events-none" />
-        <div className="flex items-center gap-2.5 mb-4">
-          <div className="w-8 h-8 rounded-full bg-brand-light text-brand flex items-center justify-center text-[16px]">🎯</div>
-          <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.18em]">Taxa de Recuperação</span>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-[10px] text-muted-brand font-semibold uppercase tracking-wider">Taxa de Recuperação</span>
         </div>
         <div className="flex items-center gap-6">
           <svg width="84" height="84" viewBox="0 0 84 84" className="-rotate-90">
@@ -173,10 +172,10 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
       </div>
 
       {/* Receita */}
-      <div className="bg-surface border border-border-subtle rounded-[18px] p-6 flex flex-col gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all">
+      <div className="bg-surface border border-border-subtle rounded-2xl p-6 flex flex-col gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all">
         <div className="flex items-center justify-between">
-          <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.16em]">Receita Recuperada</span>
-          <div className="w-6 h-6 rounded-full bg-success-bg text-success flex items-center justify-center text-xs">💰</div>
+          <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-wider">Receita Recuperada</span>
+          <div className="w-2 h-2 rounded-full bg-success" />
         </div>
         <div className="font-mono text-[32px] font-light text-text leading-none">
           {formatCurrency(receita)}
@@ -185,10 +184,10 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
       </div>
 
       {/* Envios */}
-      <div className="bg-surface border border-border-subtle rounded-[18px] p-6 flex flex-col gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all">
+      <div className="bg-surface border border-border-subtle rounded-2xl p-6 flex flex-col gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all">
         <div className="flex items-center justify-between">
-          <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.16em]">Envios Este Mês</span>
-          <div className="w-6 h-6 rounded-full bg-info-bg text-info flex items-center justify-center text-xs">✉️</div>
+          <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-wider">Envios Este Mês</span>
+          <div className="w-2 h-2 rounded-full bg-info" />
         </div>
         <div className="font-mono text-[36px] font-light text-text leading-none">{enviadosMes}</div>
         <div className={cn("inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full w-fit",
@@ -198,10 +197,10 @@ function FupMetrics({ items, agendamentos }: { items: FupItem[]; agendamentos: A
       </div>
 
       {/* Aguardando */}
-      <div className="bg-surface border border-border-subtle rounded-[18px] p-6 flex flex-col gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all">
+      <div className="bg-surface border border-border-subtle rounded-2xl p-6 flex flex-col gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all">
         <div className="flex items-center justify-between">
-          <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.16em]">Aguardando Resposta</span>
-          <div className="w-6 h-6 rounded-full bg-warning-bg text-warning flex items-center justify-center text-xs">⏳</div>
+          <span className="text-[9px] text-muted-brand font-semibold uppercase tracking-wider">Aguardando Resposta</span>
+          <div className="w-2 h-2 rounded-full bg-warning" />
         </div>
         <div className="font-mono text-[36px] font-light text-text leading-none">{aguardando}</div>
         <span className="text-[11px] text-muted-brand">{aguardando === 1 ? "cliente" : "clientes"} sem agendamento ainda</span>
@@ -335,7 +334,7 @@ function SegmentoDistribuicao({ items }: { items: FupItem[] }) {
   const maxCount = Math.max(...stats.map((s) => s.count), 1);
 
   return (
-    <div className="bg-surface border border-border-subtle rounded-[18px] p-6 mb-6">
+    <div className="bg-surface border border-border-subtle rounded-2xl p-6 mb-6">
       <h3 className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.14em] mb-4">Distribuição por Segmento</h3>
       <div className="flex flex-col gap-3">
         {stats.map(({ seg, count, recuperados, taxa }) => {
@@ -409,7 +408,7 @@ export function FollowupPage({
   }
 
   return (
-    <div className="p-6 lg:p-10 pb-24 lg:pb-10">
+    <div className="p-6 lg:p-8 pb-24 lg:pb-8">
       <FupMetrics items={items} agendamentos={agendamentos} />
       <SegmentoDistribuicao items={items} />
 

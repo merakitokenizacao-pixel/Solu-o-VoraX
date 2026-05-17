@@ -20,11 +20,11 @@ const HOURS = Array.from({ length: HOUR_END - HOUR_START + 1 }, (_, i) => HOUR_S
 const WEEKDAYS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
 const STATUS_CONFIG: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-  pendente:   { bg: "bg-warning-bg",  border: "border-warning/30",   text: "text-warning",  dot: "bg-warning" },
+  pendente: { bg: "bg-warning-bg", border: "border-warning/30", text: "text-warning", dot: "bg-warning" },
   confirmado: { bg: "bg-[var(--vorax-purple-bg)]", border: "border-[var(--vorax-purple)]/30", text: "text-[var(--vorax-purple)]", dot: "bg-[var(--vorax-purple)]" },
-  realizado:  { bg: "bg-success-bg",  border: "border-success/30",   text: "text-success",  dot: "bg-success" },
-  cancelado:  { bg: "bg-danger-bg",   border: "border-danger/30",    text: "text-danger",   dot: "bg-danger" },
-  faltou:     { bg: "bg-surface-2",   border: "border-border-subtle", text: "text-muted-brand", dot: "bg-muted-brand" },
+  realizado: { bg: "bg-success-bg", border: "border-success/30", text: "text-success", dot: "bg-success" },
+  cancelado: { bg: "bg-danger-bg", border: "border-danger/30", text: "text-danger", dot: "bg-danger" },
+  faltou: { bg: "bg-surface-2", border: "border-border-subtle", text: "text-muted-brand", dot: "bg-muted-brand" },
 };
 
 function getWeekStart(date: Date): Date {
@@ -99,7 +99,7 @@ function AgendSheet({
             { label: "Horário", value: dt ? dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—" },
           ].map(({ label, value }) => (
             <div key={label} className="bg-surface-2 rounded-xl px-3 py-2.5">
-              <div className="text-[9px] font-bold tracking-[0.1em] text-muted-brand mb-1 uppercase">{label}</div>
+              <div className="text-[9px] font-bold tracking-wider text-muted-brand mb-1 uppercase">{label}</div>
               <div className="text-[12px] font-medium text-brand">{value}</div>
             </div>
           ))}
@@ -114,7 +114,7 @@ function AgendSheet({
 
         {/* Status buttons */}
         <div className="px-6 py-4">
-          <p className="text-[9px] font-bold tracking-[0.12em] text-muted-brand mb-3 uppercase">Atualizar status</p>
+          <p className="text-[9px] font-bold tracking-wider text-muted-brand mb-3 uppercase">Atualizar status</p>
           <div className="flex flex-wrap gap-2">
             {["pendente", "confirmado", "realizado", "cancelado", "faltou"].map((s) => {
               const cfg = STATUS_CONFIG[s] ?? STATUS_CONFIG.pendente;
@@ -262,7 +262,7 @@ function WeekGrid({
   }, [agendamentos, weekDays]);
 
   return (
-    <div className="overflow-x-auto border border-border-subtle rounded-[18px] bg-surface">
+    <div className="overflow-x-auto border border-border-subtle rounded-2xl bg-surface">
       <div
         className="grid"
         style={{
@@ -282,7 +282,7 @@ function WeekGrid({
                 isToday && "bg-brand-light"
               )}
             >
-              <span className={cn("text-[10px] font-medium tracking-[0.14em] uppercase", isToday ? "text-brand" : "text-muted-brand")}>
+              <span className={cn("text-[10px] font-medium tracking-wider uppercase", isToday ? "text-brand" : "text-muted-brand")}>
                 {WEEKDAYS[d.getDay()]}
               </span>
               <span
@@ -388,11 +388,11 @@ export function AgendaPage({
   );
 
   const monthLabel = useMemo(() => {
-    const months = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+    const months = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
     const s = weekDays[0].getMonth(), e = weekDays[6].getMonth();
     const y = weekDays[6].getFullYear();
     if (s === e) return `${months[s]} de ${y}`;
-    const short = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+    const short = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
     return `${short[s]} – ${short[e]} ${y}`;
   }, [weekDays]);
 
@@ -413,7 +413,7 @@ export function AgendaPage({
   }
 
   return (
-    <div className="p-6 lg:p-10 pb-24 lg:pb-10">
+    <div className="p-6 lg:p-8 pb-24 lg:pb-8">
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
@@ -441,8 +441,8 @@ export function AgendaPage({
 
       {/* Today's strip */}
       {upcomingToday.length > 0 && (
-        <div className="mb-6 p-4 bg-brand-light border border-brand/20 rounded-[18px]">
-          <p className="text-[10px] font-bold tracking-[0.12em] text-brand uppercase mb-3">Hoje — {upcomingToday.length} agendamentos</p>
+        <div className="mb-6 p-4 bg-brand-light border border-brand/20 rounded-2xl">
+          <p className="text-[10px] font-bold tracking-wider text-brand uppercase mb-3">Hoje — {upcomingToday.length} agendamentos</p>
           <div className="flex flex-wrap gap-2">
             {upcomingToday.map((a) => {
               const dt = new Date(a.data_agendamento!);

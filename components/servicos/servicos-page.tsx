@@ -32,12 +32,12 @@ const CATEGORIA_COLORS: Record<string, string> = {
 // — Serviço card —
 function ServicoCard({ servico, onEdit }: { servico: Servico; onEdit: () => void }) {
   return (
-    <div className={cn("bg-surface border border-border-subtle rounded-[18px] p-5 flex flex-col gap-3 transition-all hover:border-border-strong hover:shadow-md", !servico.ativo && "opacity-50")}>
+    <div className={cn("bg-surface border border-border-subtle rounded-2xl p-5 flex flex-col gap-3 transition-all hover:border-border-strong hover:shadow-md", !servico.ativo && "opacity-50")}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-[15px] font-semibold text-text leading-tight">{servico.nome}</h3>
           {servico.categoria && (
-            <span className={cn("inline-block text-[9px] font-bold tracking-[0.08em] uppercase px-2 py-0.5 rounded-full mt-1", CATEGORIA_COLORS[servico.categoria] ?? "bg-surface-2 text-muted-brand")}>
+            <span className={cn("inline-block text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full mt-1", CATEGORIA_COLORS[servico.categoria] ?? "bg-surface-2 text-muted-brand")}>
               {CATEGORIA_LABELS[servico.categoria] ?? servico.categoria}
             </span>
           )}
@@ -124,7 +124,7 @@ function ServicoModal({ servico, onClose, onSave }: { servico: Partial<Servico> 
             { label: "Nome", key: "nome" as keyof Servico, type: "text" },
           ].map(({ label, key, type }) => (
             <div key={key as string}>
-              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">{label}</label>
+              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">{label}</label>
               <input type={type} value={(form[key] as string) ?? ""}
                 onChange={(e) => set(key, e.target.value)}
                 className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand" />
@@ -133,13 +133,13 @@ function ServicoModal({ servico, onClose, onSave }: { servico: Partial<Servico> 
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Preço (R$)</label>
+              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Preço (R$)</label>
               <input type="number" step="0.01" value={form.preco ?? 0}
                 onChange={(e) => set("preco", Number(e.target.value))}
                 className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand" />
             </div>
             <div>
-              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Duração (min)</label>
+              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Duração (min)</label>
               <input type="number" value={form.duracao_minutos ?? 60}
                 onChange={(e) => set("duracao_minutos", Number(e.target.value))}
                 className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand" />
@@ -147,7 +147,7 @@ function ServicoModal({ servico, onClose, onSave }: { servico: Partial<Servico> 
           </div>
 
           <div>
-            <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Categoria</label>
+            <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Categoria</label>
             <select value={form.categoria ?? ""} onChange={(e) => set("categoria", e.target.value || null)}
               className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand">
               <option value="">Sem categoria</option>
@@ -156,20 +156,20 @@ function ServicoModal({ servico, onClose, onSave }: { servico: Partial<Servico> 
           </div>
 
           <div>
-            <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Descrição</label>
+            <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Descrição</label>
             <textarea value={form.descricao ?? ""} onChange={(e) => set("descricao", e.target.value || null)} rows={3}
               className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand resize-none" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Preço pacote (R$)</label>
+              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Preço pacote (R$)</label>
               <input type="number" step="0.01" value={form.preco_pacote ?? ""} placeholder="—"
                 onChange={(e) => set("preco_pacote", e.target.value ? Number(e.target.value) : null)}
                 className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand" />
             </div>
             <div>
-              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Sessões recomendadas</label>
+              <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Sessões recomendadas</label>
               <input type="number" value={form.sessoes_recomendadas ?? 1}
                 onChange={(e) => set("sessoes_recomendadas", Number(e.target.value))}
                 className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand" />
@@ -231,12 +231,12 @@ function ClinicaConfig({ clinica: initialClinica }: { clinica: ClinicaInfo | nul
   ];
 
   return (
-    <div className="bg-surface border border-border-subtle rounded-[18px] p-7">
+    <div className="bg-surface border border-border-subtle rounded-2xl p-7">
       <h3 className="font-display text-[20px] font-light text-text mb-6">Configurações da Clínica</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {fields.map(({ label, key }) => (
           <div key={key as string}>
-            <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">{label}</label>
+            <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">{label}</label>
             <input
               value={(clinica[key] as string) ?? ""}
               onChange={(e) => set(key, e.target.value || null)}
@@ -246,12 +246,12 @@ function ClinicaConfig({ clinica: initialClinica }: { clinica: ClinicaInfo | nul
         ))}
       </div>
       <div className="mb-4">
-        <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Diferenciais</label>
+        <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Diferenciais</label>
         <textarea value={clinica.diferenciais ?? ""} onChange={(e) => set("diferenciais", e.target.value || null)} rows={3}
           className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand resize-none" />
       </div>
       <div className="mb-6">
-        <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-[0.08em] mb-1 block">Política de cancelamento</label>
+        <label className="text-[11px] font-semibold text-muted-brand uppercase tracking-wider mb-1 block">Política de cancelamento</label>
         <textarea value={clinica.politica_cancelamento ?? ""} onChange={(e) => set("politica_cancelamento", e.target.value || null)} rows={2}
           className="w-full bg-surface-2 border border-border-subtle rounded-xl px-3 py-2.5 text-[13px] text-text focus:outline-none focus:border-brand resize-none" />
       </div>
@@ -281,7 +281,7 @@ export function ServicosPage({ servicos: initial, clinica }: { servicos: Servico
   }
 
   return (
-    <div className="p-6 lg:p-10 pb-24 lg:pb-10">
+    <div className="p-6 lg:p-8 pb-24 lg:pb-8">
       {/* Tabs */}
       <div className="flex gap-1 mb-8 bg-surface-2 p-1 rounded-xl w-fit">
         {(["catalogo", "config"] as const).map((t) => (
@@ -302,8 +302,8 @@ export function ServicosPage({ servicos: initial, clinica }: { servicos: Servico
               { label: "Categorias", value: new Set(servicos.filter((s) => s.categoria).map((s) => s.categoria)).size },
               { label: "Ticket médio", value: formatCurrency(servicos.filter((s) => s.ativo).length ? totalReceita / servicos.filter((s) => s.ativo).length : 0) },
             ].map(({ label, value }) => (
-              <div key={label} className="bg-surface border border-border-subtle rounded-[18px] px-5 py-4">
-                <div className="text-[9px] text-muted-brand font-semibold uppercase tracking-[0.14em] mb-2">{label}</div>
+              <div key={label} className="bg-surface border border-border-subtle rounded-2xl px-5 py-4">
+                <div className="text-[9px] text-muted-brand font-semibold uppercase tracking-wider mb-2">{label}</div>
                 <div className="font-mono text-[28px] font-light text-text">{value}</div>
               </div>
             ))}

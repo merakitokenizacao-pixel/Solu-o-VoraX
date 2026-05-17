@@ -45,10 +45,10 @@ function NavItem({
       href={href}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 mx-3 px-4 py-[11px] rounded-[10px] text-[13px] transition-all duration-200 relative",
+        "flex items-center gap-3 mx-3 px-3 py-2 rounded-md text-[13px] transition-colors relative",
         isActive
-          ? "bg-[rgba(184,149,90,0.1)] text-[#f0ece4]"
-          : "text-[rgba(240,236,228,0.35)] hover:bg-[rgba(184,149,90,0.08)] hover:text-[rgba(240,236,228,0.75)]"
+          ? "bg-[rgba(184,149,90,0.12)] text-[#f0ece4]"
+          : "text-[rgba(240,236,228,0.35)] hover:bg-[rgba(184,149,90,0.06)] hover:text-[rgba(240,236,228,0.7)]"
       )}
     >
       {isActive && (
@@ -86,7 +86,7 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 h-screen w-[260px] z-40 flex flex-col overflow-hidden",
+          "fixed top-0 left-0 h-screen w-60 z-40 flex flex-col overflow-hidden",
           "transition-transform duration-300 ease-in-out",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
